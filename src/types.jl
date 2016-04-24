@@ -1,13 +1,29 @@
 abstract AbstractODE
 
 
+# m3: does this need type-parameters for t0,y0: Et, Eyf?
+"""
+Explicitly defined ODE of form dy = F(t,y)
+
+Fields:
+
+- t0, y0: initial conditions
+- F!: ODE function `F!(t,y,dy)` which modifies `dy` in-place
+- jac!: TODO
+"""
 type ExplicitODE <: AbstractODE
     t0; y0
     F! :: Function
     jac! :: Function
 end
 
+# m3: how about you define (a bit prematurely) an ImplicitODE type too?
 
+"""
+Convert a out-of-place explicitly defined ODE function to an in-place function.
+
+Note, this does not help with memory allocations.
+"""
 function explicit_ineff(t0,y0,F;jac = (t,y)->fdjacobian(F,t,y))
     function F!(t,y,dy)
         # this is why we can't handle a scalar type any more
@@ -19,10 +35,18 @@ function explicit_ineff(t0,y0,F;jac = (t,y)->fdjacobian(F,t,y))
     return ExplicitODE(t0,y0,F!,jac!)
 end
 
-
+# m3: needs docs!
 abstract AbstractStepper
 abstract AbstractState
 
+# m3:
+# - docs
+# - maybe use the typevars as defined in make_consistent_types for t,
+#   y, dy?  T->Et, S->Ty
+#   (or something else consistent throughout, maybe nicer would be all
+#   uppercase: ET, EFY, TT, TY).
+# - if find `Step` a bit confusing name, in particular combined with
+#   AbstractStepper, but not sure what's better.
 
 # this might suffice for some solvers
 type Step{T,S}
@@ -40,8 +64,31 @@ function show(io::IO, state :: Step)
 end
 
 
-# general purpose options
-immutable Options{T}
+"""
+Options for ODE solvers.  This type has a key-word constructor which
+will fill the structure with default values.
+
+General:
+
+- initstep :: T  initial step
+- tstop    :: T  end integration time
+- reltol   :: T  relative tolerance (m3: could this be a vector?)
+- abstol   :: T  absolute tolerance (m3: could this be a vector?)
+- minstep  :: T  minimal allowed step
+- maxstep  :: T  maximal allowed step
+- norm           function to calculate the norm in step control
+- maxiters :: T  maximum number of steps
+
+Dense output options:
+
+- tspan    :: Vector{T}  output times
+- points :: Symbol which points are returned: `:specified` only the
+  ones in tspan or `:all` which includes also the step-points of the solver.
+- stopevent  Stop integration at a zero of this function
+- roottol    TODO
+
+"""
+immutable Options{T} # m3:  T->Et
     # stepper options
     initstep :: T
     tstop    :: T
@@ -55,12 +102,17 @@ immutable Options{T}
     # dense output options
     tspan    :: Vector{T}
     points   :: Symbol
+# m3: I think this should be an array of functions.  Depending on some
+# flag each one returns, the iteration stops or continues.  Rename it
+# to eventfns.  I like matlabs interface.
+# [value,isterminal,direction] = myEventsFcn(t,y,dy)
+# The value gets stored.
     stopevent :: Function
     roottol  :: T
 
     function Options(;
                      tstop    = T(Inf),
-                     tspan = [tstop],
+                     tspan = [tstop], # m3 maybe [tstart, tstop]
                      reltol   = eps(T)^(1/3)/10,
                      abstol   = eps(T)^(1/2)/10,
                      minstep  = 10*eps(T),
@@ -84,6 +136,7 @@ end
 
 
 function show{T}(io::IO, opts :: Options{T})
+    # m3: iterate over fields.
     println("")
     println("Options{$T}")
     println("tstop    = $(opts.tstop)")
@@ -99,6 +152,12 @@ function show{T}(io::IO, opts :: Options{T})
     println("roottol  = $(opts.roottol)")
 end
 
+# m3:
+# - I don't like the name `Solution` as this is just the problem
+#   specification.  Maybe `Problem` or `SolutionIterator`?
+# - in my idea-write-up I added `tend` to this type.  I quite like
+#   this as it means that tspan is just about outputs and t0, tend is
+#   about the integration interval.  But maybe this is over-tidy.
 
 # solution is a collection of an equation, an integration method
 # (stepper) and its options
