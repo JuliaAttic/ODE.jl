@@ -41,9 +41,20 @@ type IVP{T,Y,F,G,J} <: AbstractIVP{T,Y}
     F!  ::F
     G!  ::G
     J!  ::J
+    reversed::Bool
 end
 @compat Base.eltype(t::Type{IVP}) = eltype(supertype(t))
 Base.eltype(t::IVP) = eltype(typeof(t))
+
+
+function output(t,y,ode::IVP)
+    if !ode.reversed
+        return (t,y)
+    else
+        t0 = ode.t0
+        return (2t0-t,y)
+    end
+end
 
 
 """
@@ -62,8 +73,31 @@ typealias ExplicitODE{T,Y} IVP{T,Y,Function,Void,Function}
                                             y0::Y,
                                             F!::Function;
                                             J!::Function = forward_jacobian!(F!,similar(y0)),
+                                            reversed = false,
                                             kargs...)
-    ExplicitODE{T,Y}(t0,y0,similar(y0),F!,nothing,J!)
+    ExplicitODE{T,Y}(t0,y0,similar(y0),F!,nothing,J!,reversed)
+end
+
+function Base.reverse(ode::ExplicitODE)
+    t0 = ode.t0
+
+    # TODO: improve the implementation
+    function F_reverse!(t,y,dy)
+        ode.F!(2*t0-t,y,dy)
+        for i in indices(dy)
+            dy[i]=-dy[i]
+        end
+    end
+
+    # TODO: is that how the jacobian changes?
+    function jac_reverse!(t,y,J)
+        ode.J!(2*t0-t,y,J)
+        for i in indices(J)
+            J[i]=-J[i]
+        end
+    end
+
+    ExplicitODE(ode.t0,ode.y0,F_reverse!,J! = jac_reverse!, reversed = true)
 end
 
 """
@@ -85,8 +119,12 @@ typealias ImplicitODE{T,Y} IVP{T,Y,Void,Function,Function}
                                             G!::Function;
                                             J!::Function = forward_jacobian_implicit!(G!,similar(y0)),
                                             dy0::Y = zero(y0),
+                                            reversed = false,
                                             kargs...)
-    ImplicitODE{T,Y}(t0,y0,dy0,nothing,G!,J!)
+    if reversed
+        error("Time reversal for ImplicitODE is not supportde.")
+    end
+    ImplicitODE{T,Y}(t0,y0,dy0,nothing,G!,J!,reversed)
 end
 
 """
