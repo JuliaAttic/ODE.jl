@@ -46,8 +46,19 @@ name(stepper::RKStepper) = stepper.tableau.name
 isadaptive(::RKStepper{:adaptive}) = true
 isadaptive(::RKStepper{:fixed}) = false
 
-solve{T,S<:RKStepper}(ode::ExplicitODE{T}, stepper::Type{S}; options...) =
-    Solver(ode,stepper{T}(;options...))
+function solve{T,S<:RKStepper}(ode::ExplicitODE{T},
+                               ::Type{S};
+                               tspan = T[Inf],
+                               tstop = tspan[end],
+                               options...)
+    t0 = ode.t0
+    if tstop < t0
+        tspan = 2t0.-tspan
+        tstop = 2t0-tstop
+        ode = reverse(ode)
+    end
+    return Solver(ode,S{T}(;tspan = tspan, tstop = tstop, options...))
+end
 
 # lower level interface
 
@@ -135,7 +146,7 @@ function next{O<:ExplicitODE,S<:RKStepperFixed}(s::Solver{O,S}, state)
     end
     step.t += dt
     copy!(step.y,work.ynew)
-    return ((step.t,step.y), state)
+    return (output(step.t,step.y,s.ode), state)
 end
 
 
@@ -211,7 +222,7 @@ function next{O<:ExplicitODE,S<:RKStepperAdaptive}(sol::Solver{O,S}, state)
             break
         end
     end
-    return ((step.t,step.y),state)
+    return (output(step.t,step.y,sol.ode),state)
 end
 
 
