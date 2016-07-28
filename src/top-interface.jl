@@ -1,43 +1,68 @@
+"Solves an IVP-problem"
+function solve(prob::Problem)
+    T,Y = eltype(prob.ivp)
+
+    to = Array(T,0)
+    yo = Array(Y,0)
+    for (t,y) in prob
+        push!(to,t)
+        push!(yo, copy(y))
+    end
+
+    return (to,yo)
+end
+
+# function solve{O,I<:DenseOutput}(prob::Problem{O,I}) this is ambiguous, why?
+function solve{O<:IVP,I<:DenseOutput}(prob::Problem{O,I})
+    T,Y = eltype(O)
+    n = length(prob.solver)
+    to = Array(T,n)
+    yo = Array(Y,n)
+    for (i,(t,y)) in enumerate(prob)
+        to[i] = t
+        yo[i] = copy(y)
+    end
+    return (to,yo)
+end
+
+
+
+
 """
 
 We assume that the initial data y0 is given at tspan[1], and that
 tspan[end] is the last integration time.
 
 """
-function ode{T,Y,M<:AbstractSolver}(F, y0::Y,
-                                    tout::AbstractVector{T};
-                                    solver::Type{M} = RKIntegratorAdaptive{:rk45},
-                                    points = :all,
-                                    kargs...)
+function solve{T,Y,M<:AbstractSolver}(F, y0::Y,
+                                      tout::AbstractVector{T};
+                                      solver::Type{M} = RKIntegratorAdaptive{:rk45},
+                                      points = :all,
+                                      kargs...)
 
     t0 = tout[1]
 
     # construct a Problem
     equation  = explicit_ineff(t0,y0,F;kargs...)
     if points == :all
-        prob = solve(equation, solver;
-                     tout = tout,
-                     kargs...)
+        prob = Problem(equation, solver;
+                       tout = tout,
+                       kargs...)
     elseif points == :specified
-        prob = solve(equation,
-                     DenseOutput{solver};
-                     tout = tout,
-                     kargs...)
+        prob = Problem(equation,
+                       DenseOutput{solver};
+                       tout = tout,
+                       kargs...)
     else
         error("Unsupported points value (should be :all or :specified)")
     end
+    t,y =  solve(prob)
 
     # determine if we have to unpack y
-    extract = Y <: Number
-
-    to = Array(T,0)
-    yo = Array(Y,0)
-    for (t,y) in prob
-        push!(to,t)
-        push!(yo, extract ? y[1] : copy(y))
+    if Y <: Number
+        y = vcat(y...) # TODO
     end
-
-    return (to,yo)
+    return t,y
 end
 
 """
@@ -71,8 +96,7 @@ function ode_conv{Ty,T}(F,y0::Ty,t0::AbstractVector{T};kargs...)
         error("The initial data has to be of a concrete type (or an array)")
     end
 
-    ode(F,y0,t0;kargs...)
-
+    solve(F,y0,t0;kargs...)
 end
 
 

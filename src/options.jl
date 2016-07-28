@@ -65,7 +65,7 @@ end
 @compat function (::Type{FixedOptions{T}}){T}(;
                                               tout     = T[Inf],
                                               tstop    = tout[end],
-                                              initstep = 10*eps(T),
+                                              initstep = 0.01,
                                               kargs...)
     @assert initstep>=0
     FixedOptions{T}(tstop,initstep)

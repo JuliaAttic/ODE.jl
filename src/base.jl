@@ -8,7 +8,7 @@
 
 
 abstract AbstractIVP{T,Y}
-Base.eltype{T,Y}(::Type{AbstractIVP{T,Y}}) = T,Y,Y
+Base.eltype{T,Y}(::Type{AbstractIVP{T,Y}}) = T,Y
 
 """
 
@@ -65,7 +65,7 @@ typealias ExplicitODE{T,Y} IVP{T,Y,Function,Void,Function}
                                             F!::Function;
                                             J!::Function = forward_jacobian!(F!,similar(y0)),
                                             kargs...)
-    ExplicitODE{T,Y}(t0,y0,similar(y0),F!,nothing,J!)
+    ExplicitODE{T,Y}(t0, y0, similar(y0), F!, nothing, J!)
 end
 
 """
@@ -171,56 +171,58 @@ immutable Problem{O<:AbstractIVP,S<:AbstractSolver}
     ivp   ::O
     solver ::S
 end
+Problem{S<:AbstractSolver}(ivp::IVP, ::Type{S}=RKIntegratorAdaptive{:rk45}; opts...) =
+    Problem(ivp, S(ivp; opts...))
 
 Base.eltype{O}(::Type{Problem{O}}) = eltype(O)
 Base.eltype{O}(::Problem{O}) = eltype(O)
 
-"""
-    solve(ivp::IVP, solver::Type{AbstractSolver}, opts...)
-    solve(ivp::IVP; solver=RKIntegratorAdaptive{:rk45}, opts...)
+# """
+#     solve(ivp::IVP, solver::Type{AbstractSolver}, opts...)
+#     solve(ivp::IVP; solver=RKIntegratorAdaptive{:rk45}, opts...)
 
-Solve creates an iterable `Problem` instance from an `IVP` instance
-(specifying the math) and from a `Type{AbstractSolver}` (the numerical
-integrator).  The simplest use case is
+# Solve creates an iterable `Problem` instance from an `IVP` instance
+# (specifying the math) and from a `Type{AbstractSolver}` (the numerical
+# integrator).  The simplest use case is
 
-```julia
-for (t,y,dy) in solver(...)
-    # do something with t, y an dy
-end
-```
+# ```julia
+# for (t,y,dy) in solver(...)
+#     # do something with t, y an dy
+# end
+# ```
 
-If the integration interval, defined by the keyword argument `tstop`,
-is finite you can request all the results at once by calling
-```
-collect(solver(...)) # => Vector{Tuple{T,Y,Y}}
+# If the integration interval, defined by the keyword argument `tstop`,
+# is finite you can request all the results at once by calling
+# ```
+# collect(solver(...)) # => Vector{Tuple{T,Y,Y}}
 
-Notes:
+# Notes:
 
-- usually a solvers requires the ivp to be in a certain form, say an
- `ExplicitODE`.
-- the second argument it the *Type* of the solver and not an instance.
-  The instance of the solve can only be created together with the
-  `ivp` as their type parameters need to match.
+# - usually a solvers requires the ivp to be in a certain form, say an
+#  `ExplicitODE`.
+# - the second argument it the *Type* of the solver and not an instance.
+#   The instance of the solve can only be created together with the
+#   `ivp` as their type parameters need to match.
 
-Input:
+# Input:
 
-- `ivp::IVP`
-- `S::Type{AbstractSolver}`
+# - `ivp::IVP`
+# - `S::Type{AbstractSolver}`
 
-Output:
+# Output:
 
-- `::Problem`
+# - `::Problem`
 
-"""
-function solve(ivp::IVP, solver; opts...)
-    Problem(ivp,solver(ivp;opts...))
-end
+# """
+# function solve(ivp::IVP, solver; opts...)
+#     Problem(ivp,solver(ivp;opts...))
+# end
 
-function solve{S<:AbstractSolver}(ivp::IVP;
-                                  solver::Type{S} = RKIntegratorAdaptive{:rk45},
-                                  opts...)
-    solve(ivp, solver; opts...)
-end
+# function solve{S<:AbstractSolver}(ivp::IVP;
+#                                   solver::Type{S} = RKIntegratorAdaptive{:rk45},
+#                                   opts...)
+#     solve(ivp, solver; opts...)
+# end
 
 # In Julia 0.5 the collect needs length to be defined, we cannot do
 # that for a Problem but we can implement our own collect
