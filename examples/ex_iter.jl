@@ -19,7 +19,7 @@ opts = Dict(:initstep=>0.1,
             :abstol=>1e-5)
 
 # create a Problem instance
-prob = ODE.solve(ode,integ;opts...)
+prob = ODE.Problem(ode,integ;opts...)
 
  # iterate over the solution
 println("t, y, err")
@@ -39,7 +39,7 @@ opts = Dict(:initstep=>0.1,
             :reltol=>1e-5,
             :abstol=>1e-5)
 
-prob = ODE.solve(ode,integ;opts...)
+prob = ODE.Problem(ode,integ;opts...)
 
 println("t, y, err")
 for (t,y) in prob # iterate over the solution
@@ -56,7 +56,7 @@ opts = Dict(:initstep=>0.1,
             :abstol=>1e-5,
             :tout=>[t0:-0.1:0;])
 
-prob = ODE.solve(ode,ODE.DenseOutput{integ};opts...)
+prob = ODE.Problem(ode,ODE.DenseOutput{integ};opts...)
 println("t, y, err")
 for (t,y) in prob # iterate over the solution
     println((t,y[1],abs(y[1]-e.^(t-1))))
