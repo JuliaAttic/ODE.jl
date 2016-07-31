@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <title>Base - ODE.jl</title>
+  
+
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/highlight.css">
+  <link href="../../assets/Documenter.css" rel="stylesheet">
+
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Base";
+    var mkdocs_page_input_path = "man/base.md";
+    var mkdocs_page_url = "/man/base/";
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js"></script>
+  <script src="../../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../../js/highlight.pack.js"></script>
+  <script src="../../js/theme.js"></script> 
+  <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <script src="../../assets/mathjaxhelper.js"></script>
+
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> ODE.jl</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        <ul class="current">
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../..">Home</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Manual</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../basics/">Basics</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Base</a>
+        
+            <ul>
+            
+            </ul>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Tutorials</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../tutorials/euler_integrator/">Fixed step integrator</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">ODE.jl</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Manual &raquo;</li>
+        
+      
+    
+    <li>Base</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        
+          <a href="https://github.com/JuliaODE/ODE.jl" class="icon icon-github"> Edit on GitHub</a>
+        
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <p><a id='ODE.accept!-Tuple{ODE.IVP,I<:ODE.AbstractIntegrator,ODE.AbstractState}' href='#ODE.accept!-Tuple{ODE.IVP,I<:ODE.AbstractIntegrator,ODE.AbstractState}'>#</a>
+<strong><code>ODE.accept!</code></strong> &mdash; <em>Method</em>.</p>
+<p>Accepts (in-place) the computed step.  Called if <code>errorcontrol!</code> gave a small enough error.</p>
+<p>Returns <code>Status</code>.</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/base.jl#L389-396' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.errorcontrol!-Tuple{ODE.IVP,I<:ODE.AbstractIntegrator,ODE.AbstractState}' href='#ODE.errorcontrol!-Tuple{ODE.IVP,I<:ODE.AbstractIntegrator,ODE.AbstractState}'>#</a>
+<strong><code>ODE.errorcontrol!</code></strong> &mdash; <em>Method</em>.</p>
+<p>Estimates the error (such that a step is accepted if err&lt;=1). Depending on the stepper it may update the state, e.g. by computing a new dt or a new order (but not by computing a new solution!).</p>
+<p>Returns <code>(err,Status)</code>.</p>
+<p>If the <code>status==abort</code> then the integration is aborted, status values of <code>cont</code> and <code>finish</code> are ignored.</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/base.jl#L374-385' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.explicit_ineff-Tuple{T,AbstractArray{Y,N},Function}' href='#ODE.explicit_ineff-Tuple{T,AbstractArray{Y,N},Function}'>#</a>
+<strong><code>ODE.explicit_ineff</code></strong> &mdash; <em>Method</em>.</p>
+<p>Convert a out-of-place explicitly defined ODE function to ExplicitODE.  As the name suggests, the result is not going to be very efficient.</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/top-interface.jl#L80-86' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.interpolate!' href='#ODE.interpolate!'>#</a>
+<strong><code>ODE.interpolate!</code></strong> &mdash; <em>Function</em>.</p>
+<p>Makes dense output</p>
+<p>interpolate!(istate::AbstractState, step_prev::Step, tout, step_out::Step)</p>
+<p>Input:</p>
+<ul>
+<li><code>istate::AbstractState</code> state of the integrator</li>
+<li><code>step_prev</code> the previous step, part of <code>dstate</code></li>
+<li>tout – time of requested output</li>
+<li>step_out::Step – inplace output step</li>
+</ul>
+<p>Output: nothing</p>
+<p>TODO: output dy too</p>
+<p>TOOD: provide arbitrary order dense output. Maybe use work of @obiajulu on A-B-M methods.</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/dense.jl#L178-195' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.interpolate!-Tuple{ODE.AbstractState,ODE.Step,Any,ODE.Step}' href='#ODE.interpolate!-Tuple{ODE.AbstractState,ODE.Step,Any,ODE.Step}'>#</a>
+<strong><code>ODE.interpolate!</code></strong> &mdash; <em>Method</em>.</p>
+<p>Make dense output using Hermite interpolation of order O(3), should work for most integrators and is used as default.  This only needs y and dy at t1 and t2.</p>
+<p>Ref: Hairer &amp; Wanner p.190</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/dense.jl#L198-204' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.next_interval!-Tuple{Any,Any,Any,Any,Any}' href='#ODE.next_interval!-Tuple{Any,Any,Any,Any,Any}'>#</a>
+<strong><code>ODE.next_interval!</code></strong> &mdash; <em>Method</em>.</p>
+<p>Takes steps using the underlying integrator until it reaches a first step such that <code>t&gt;=tout</code>.  It fills the <code>steps</code> variable with (Step(t1,y(t1),dy(t1)),Step(t2,y(t2),dy(t2))), where <code>t1</code> is is the step before <code>tout</code> and <code>t2</code> is <code>&gt;=tout</code>.  In other words <code>tout∈[t1,t2]</code>.</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/dense.jl#L139-146' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.ode-Tuple{Any,Y,AbstractArray{T,1}}' href='#ODE.ode-Tuple{Any,Y,AbstractArray{T,1}}'>#</a>
+<strong><code>ODE.ode</code></strong> &mdash; <em>Method</em>.</p>
+<p>We assume that the initial data y0 is given at tspan[1], and that tspan[end] is the last integration time.</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/top-interface.jl#L1-6' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.ode23s-Tuple{Any,Any,Any}' href='#ODE.ode23s-Tuple{Any,Any,Any}'>#</a>
+<strong><code>ODE.ode23s</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>ODE.odeXX(F,y0,t0;kargs...)
+</code></pre>
+
+<p>Solves an ODE <code>y'=F(t,y)</code> with initial conditions <code>y0</code> and <code>t0</code>.</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/top-interface.jl#L43-47' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.onestep!-Tuple{ODE.IVP,ODE.AbstractIntegrator,ODE.AbstractState}' href='#ODE.onestep!-Tuple{ODE.IVP,ODE.AbstractIntegrator,ODE.AbstractState}'>#</a>
+<strong><code>ODE.onestep!</code></strong> &mdash; <em>Method</em>.</p>
+<p>Take a step, modifies <code>state</code> in-place.  This is the core function to be implemented by a solver.  However, if possible solvers should opt to implement the sub-step functions <code>trialstep!</code>, <code>errorcontrol!</code> and <code>accept!</code>, instead of directly <code>onestep!</code>.</p>
+<p>Input:</p>
+<ul>
+<li>prob::Problem, state::AbstractState</li>
+</ul>
+<p>Output:</p>
+<ul>
+<li>Bool: <code>false</code>: continue iteration, <code>true</code>: terminate iteration.</li>
+</ul>
+<p>substeps.</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/base.jl#L311-327' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.onestep!-Tuple{ODE.IVP,ODE.DenseOutput,ODE.DenseState}' href='#ODE.onestep!-Tuple{ODE.IVP,ODE.DenseOutput,ODE.DenseState}'>#</a>
+<strong><code>ODE.onestep!</code></strong> &mdash; <em>Method</em>.</p>
+<p>TODO: rename <code>tout</code> to <code>tout</code> and drop the support for <code>points=:all</code> outside of the <code>odeXX</code>?  Maybe even <code>odeXX(;tout=[...])</code> would use dense output while <code>odeXX(;)</code> wouldn't.</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/dense.jl#L91-98' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.output-Tuple{ODE.AbstractState}' href='#ODE.output-Tuple{ODE.AbstractState}'>#</a>
+<strong><code>ODE.output</code></strong> &mdash; <em>Method</em>.</p>
+<p>Returns variables returned during iterations.</p>
+<p>output(st::AbstractState) = t,y,dy</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/base.jl#L122-126' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.solve-Tuple{ODE.IVP,Any}' href='#ODE.solve-Tuple{ODE.IVP,Any}'>#</a>
+<strong><code>ODE.solve</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>solve(ivp::IVP, solver::Type{AbstractSolver}, opts...)
+solve(ivp::IVP; solver=RKIntegratorAdaptive{:rk45}, opts...)
+</code></pre>
+
+<p>Solve creates an iterable <code>Problem</code> instance from an <code>IVP</code> instance (specifying the math) and from a <code>Type{AbstractSolver}</code> (the numerical integrator).  The simplest use case is</p>
+<pre><code class="julia">for (t,y,dy) in solver(...)
+    # do something with t, y an dy
+end
+</code></pre>
+
+<p>If the integration interval, defined by the keyword argument <code>tstop</code>, is finite you can request all the results at once by calling ``` collect(solver(...)) # =&gt; Vector{Tuple{T,Y,Y}}</p>
+<p>Notes:</p>
+<ul>
+<li>usually a solvers requires the ivp to be in a certain form, say an</li>
+</ul>
+<p><code>ExplicitODE</code>. - the second argument it the <em>Type</em> of the solver and not an instance.   The instance of the solve can only be created together with the   <code>ivp</code> as their type parameters need to match.</p>
+<p>Input:</p>
+<ul>
+<li><code>ivp::IVP</code></li>
+<li><code>S::Type{AbstractSolver}</code></li>
+</ul>
+<p>Output:</p>
+<ul>
+<li><code>::Problem</code></li>
+</ul>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/base.jl#L178-214' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.trialstep!-Tuple{ODE.IVP,I<:ODE.AbstractIntegrator,ODE.AbstractState}' href='#ODE.trialstep!-Tuple{ODE.IVP,I<:ODE.AbstractIntegrator,ODE.AbstractState}'>#</a>
+<strong><code>ODE.trialstep!</code></strong> &mdash; <em>Method</em>.</p>
+<p>Advances the solution by trying to compute a single step.  The new step is kept in the <code>state</code> in work arrays so that <code>errorcontrol!</code> can compute the magnitude of its error.  If the error is small enough <code>accept!</code> updates <code>state</code> to reflect the state at the new time.</p>
+<p>Returns <code>Status</code>.</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/base.jl#L361-370' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.AbstractIntegrator' href='#ODE.AbstractIntegrator'>#</a>
+<strong><code>ODE.AbstractIntegrator</code></strong> &mdash; <em>Type</em>.</p>
+<p>The abstract type of the actual algorithm to solve an IVP.</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/base.jl#L106-110' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.AbstractSolver' href='#ODE.AbstractSolver'>#</a>
+<strong><code>ODE.AbstractSolver</code></strong> &mdash; <em>Type</em>.</p>
+<p>The supertype of anything which can get you to a solution of a IVP. Subtypes include: <code>AbstractIntegrator</code>s but also <code>DenseOutput</code></p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/base.jl#L94-99' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.AbstractState' href='#ODE.AbstractState'>#</a>
+<strong><code>ODE.AbstractState</code></strong> &mdash; <em>Type</em>.</p>
+<p>AbstractState keeps the temporary data (state) for the iterator Problem{::AbstractIntegrator}.</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/base.jl#L114-119' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.AdaptiveOptions' href='#ODE.AdaptiveOptions'>#</a>
+<strong><code>ODE.AdaptiveOptions</code></strong> &mdash; <em>Type</em>.</p>
+<p>Generic options for adaptive ODE solvers.  This type has a key-word constructor which will fill the structure with default values.</p>
+<p>General:</p>
+<ul>
+<li>initstep ::T  initial step size (always positive)</li>
+<li>tstop    ::T  end integration time</li>
+<li>reltol   ::T  relative tolerance (m3: could this be a vector?)</li>
+<li>abstol   ::T  absolute tolerance (m3: could this be a vector?)</li>
+<li>minstep  ::T  minimal allowed step size (always positive)</li>
+<li>maxstep  ::T  maximal allowed step size (always positive)</li>
+<li>norm          function to calculate the norm in step control</li>
+<li>maxiters ::T  maximum number of steps</li>
+<li>isoutofdomain::Function checks if the solution is outside of the allowed domain</li>
+</ul>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/options.jl#L3-20' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.DenseOptions' href='#ODE.DenseOptions'>#</a>
+<strong><code>ODE.DenseOptions</code></strong> &mdash; <em>Type</em>.</p>
+<p>Dense output options:</p>
+<ul>
+<li>tout    ::Vector{T}  output times</li>
+</ul>
+<p>TODO options:</p>
+<ul>
+<li>points   ::Symbol which points are returned: <code>:specified</code> only the ones in tspan or <code>:all</code> which includes also the step-points of the solver.</li>
+<li>stopevent   Stop integration at a zero of this function</li>
+<li>roottol</li>
+</ul>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/dense.jl#L3-16' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.DenseOutput' href='#ODE.DenseOutput'>#</a>
+<strong><code>ODE.DenseOutput</code></strong> &mdash; <em>Type</em>.</p>
+<p>A solver specialized in dense output; it wraps an integrator. It stores the subsequent steps generated by <code>Problem</code> and interpolates the results (currently this means at the output times stored in <code>opts.tout</code>).</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/dense.jl#L36-43' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.DenseState' href='#ODE.DenseState'>#</a>
+<strong><code>ODE.DenseState</code></strong> &mdash; <em>Type</em>.</p>
+<p>The state of the dense solver <code>DenseOutput</code>.</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/dense.jl#L66-70' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.FixedOptions' href='#ODE.FixedOptions'>#</a>
+<strong><code>ODE.FixedOptions</code></strong> &mdash; <em>Type</em>.</p>
+<p>Generic options for fixed step ODE solvers.  This type has a key-word constructor which will fill the structure with default values.</p>
+<p>General:</p>
+<ul>
+<li>initstep ::T  initial step (always positive)</li>
+<li>tstop    ::T  end integration time</li>
+</ul>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/options.jl#L49-59' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.IVP' href='#ODE.IVP'>#</a>
+<strong><code>ODE.IVP</code></strong> &mdash; <em>Type</em>.</p>
+<p>Defines the mathematical part of an IVP (initial value problem) specified in the general form:</p>
+<p><code>F(t, y) =  G(t, y, dy)</code> with <code>y(t0)= y0</code></p>
+<p>Depending on the combination of the parameters this type can represent a wide range of problems, including ODE, DAE and IMEX.  Nevertheless not all solvers will support any combinations of <code>F</code> and <code>G</code>.  Note that not specifying <code>G</code> amounts to <code>G=dy/dt</code>.</p>
+<ul>
+<li><code>tspan</code> – tuple <code>(start_t,end_t)</code></li>
+<li><code>y0</code> – initial condition</li>
+<li><code>F!</code> – in-place <code>F</code> function <code>F!(t,y,res)</code>.  If <code>F=0</code> set to <code>nothing</code>.</li>
+<li><code>G!</code> – in-place <code>G</code> function <code>G!(t,y,dy,res)</code>.  If <code>G=dy/dt</code> then         set to <code>nothing</code> (or <code>dy</code> if the solver supports this).  Can         also be a mass matrix for a RHS <code>M dy/dt</code></li>
+<li><code>J!</code> – in-place Jacobian function <code>J!(t,y,dy,res)</code>.</li>
+</ul>
+<p>TODO: how to fit the sparsity pattern in J?</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/base.jl#L13-36' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.Problem' href='#ODE.Problem'>#</a>
+<strong><code>ODE.Problem</code></strong> &mdash; <em>Type</em>.</p>
+<p>This is an iterable type, each call to next(...) produces a next step of a numerical solution to an IVP.</p>
+<ul>
+<li>ivp: is the prescrived ivp, along with the initial data</li>
+<li>solver: the algorithm used to produce subsequent values from the ivp</li>
+</ul>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/base.jl#L161-169' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.RKIntegrator' href='#ODE.RKIntegrator'>#</a>
+<strong><code>ODE.RKIntegrator</code></strong> &mdash; <em>Type</em>.</p>
+<p>A general Runge-Kutta integrator (it can represent either, a fixed step or an adaptive step algorithm).</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/integrators/runge-kutta.jl#L43-48' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.RKState' href='#ODE.RKState'>#</a>
+<strong><code>ODE.RKState</code></strong> &mdash; <em>Type</em>.</p>
+<p>State for the Runge-Kutta integrator.</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/integrators/runge-kutta.jl#L100-102' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.RKWorkArrays' href='#ODE.RKWorkArrays'>#</a>
+<strong><code>ODE.RKWorkArrays</code></strong> &mdash; <em>Type</em>.</p>
+<p>Pre allocated arrays to store temporary data.  Used only by Runge-Kutta integrator.</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/integrators/runge-kutta.jl#L86-91' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.RosenbrockState' href='#ODE.RosenbrockState'>#</a>
+<strong><code>ODE.RosenbrockState</code></strong> &mdash; <em>Type</em>.</p>
+<p>The state for the Rosenbrock integrator</p>
+<ul>
+<li>step:  Last successful step</li>
+<li>F1,F2: Work arrays for storing the intermediate values of y'</li>
+<li>J:     Jacobian</li>
+<li>iters: Number of successful steps made</li>
+</ul>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/integrators/ode23s.jl#L24-32' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.Status' href='#ODE.Status'>#</a>
+<strong><code>ODE.Status</code></strong> &mdash; <em>Type</em>.</p>
+<p>Holds the solver status, used inside of <code>onestep!</code>.</p>
+<p>Values:</p>
+<ul>
+<li>cont – continue integration</li>
+<li>abort – abort integration</li>
+<li>finish – integration reached the end</li>
+</ul>
+<p>Statuses can be combined with &amp;: - cont&amp;cont == cont - finish&amp;cont == finish - abort&amp;cont == abort - abort&amp;finish = abort</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/base.jl#L279-293' class='documenter-source'>source</a><br></p>
+<p><a id='ODE.Step' href='#ODE.Step'>#</a>
+<strong><code>ODE.Step</code></strong> &mdash; <em>Type</em>.</p>
+<p>Holds a value of a function and its derivative at time t.  This is usually used to store the solution of an IVP at particular times.</p>
+<p><a target='_blank' href='https://github.com/JuliaODE/ODE.jl/tree/123901414253ff8428c6d47a02528f0c5095f617/src/base.jl#L140-145' class='documenter-source'>source</a><br></p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../../tutorials/euler_integrator/" class="btn btn-neutral float-right" title="Fixed step integrator">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../basics/" class="btn btn-neutral" title="Basics"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/JuliaODE/ODE.jl" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../basics/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../../tutorials/euler_integrator/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+
+</body>
+</html>

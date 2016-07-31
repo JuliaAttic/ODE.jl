@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <title>Fixed step integrator - ODE.jl</title>
+  
+
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/highlight.css">
+  <link href="../../assets/Documenter.css" rel="stylesheet">
+
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Fixed step integrator";
+    var mkdocs_page_input_path = "tutorials/euler_integrator.md";
+    var mkdocs_page_url = "/tutorials/euler_integrator/";
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js"></script>
+  <script src="../../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../../js/highlight.pack.js"></script>
+  <script src="../../js/theme.js"></script> 
+  <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <script src="../../assets/mathjaxhelper.js"></script>
+
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> ODE.jl</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        <ul class="current">
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../..">Home</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Manual</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../man/basics/">Basics</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../man/base/">Base</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Tutorials</span></li>
+
+        
+            
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Fixed step integrator</a>
+        
+            <ul>
+            
+            </ul>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">ODE.jl</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Tutorials &raquo;</li>
+        
+      
+    
+    <li>Fixed step integrator</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        
+          <a href="https://github.com/JuliaODE/ODE.jl" class="icon icon-github"> Edit on GitHub</a>
+        
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <p>Below you will find the simplest implementation of a reasonable generic solver that finds solutions to explicit ODE equations.</p>
+<pre><code class="julia">type EulerIntegrator &lt;: AbstractIntegrator
+    # nothing in here yet
+end
+
+type EulerState
+    t
+    y
+    dy
+end
+
+output(state::EulerState) = state.t, state.y, state.dy
+
+# see we don't need a fancy constructor
+function solver(ode::ExplicitODE,
+                ::Type{EulerIntegrator};
+                options...)
+    return Problem(ode,EulerIntegrator())
+end
+
+function init(ode::ExplicitODE, integ::EulerIntegrator)
+    t0, y0 = ode.t0, ode.y0
+    dy0 = similar(ode.dy0)
+    ode.F!(t0,y0,dy0)           # fill in the values of the derivative
+    EulerState(t0,y0,dy0)
+end
+
+function onestep!(ode::ExplicitODE, integ::EulerIntegrator, state::EulerState)
+    t, y, dy = output(state)
+    dt = 0.1
+    y += dt*dy
+    t += dt
+    ode.F!(t0,y0,dy0)           # update the derivative
+    return cont
+end
+</code></pre>
+
+<p>There are several problems with the above implementation.  First of all, it has a constant prescribed step size.  This could easily be fixed by changing the type definition and the <code>solver</code> to</p>
+<pre><code class="julia">type EulerIntegrator &lt;: AbstractIntegrator
+    initstep
+end
+
+function solver(ode::ExplicitODE,
+                ::Type{EulerIntegrator};
+                initstep = 0.1,
+                options...)
+    return Problem(ode,EulerIntegrator(initstep))
+end
+</code></pre>
+
+<p>we should also change the line <code>dt = 0.1</code> in the <code>onestep!</code> function to <code>dt = stepper.initstep</code>.  Now we can run our integrator with a custom step size!</p>
+<pre><code class="julia">sol = solver(ode,EulerIntegrator,initstep = 0.01)
+for (t,y) in sol
+    if t &gt; 1
+        print(t,y)
+        break
+    end
+end
+</code></pre>
+
+<p>Another issue is type stability, to make <code>EulerIntegrator</code> perform better we should explicitly annotate the fields in both <code>EulerIntegrator</code> and <code>EulerState</code> like this</p>
+<pre><code class="julia">type EulerIntegrator{T,Y} &lt;: AbstractIntegrator{T,Y}
+    initstep::T
+end
+
+type EulerState{T,Y}
+    t::T
+    y::Y
+    dy::Y
+end
+
+function solver(ode::ExplicitODE{T,Y},
+                ::Type{EulerIntegrator};
+                initstep::T = T(0.1),
+                options...)
+    return Problem(ode,EulerIntegrator{T,Y}(initstep))
+end
+</code></pre>
+
+<p>But the <code>EulerState{T,Y}</code> is exactly the same as <code>Step</code> from <code>base.jl</code>, so we can simplify it a bit more</p>
+<pre><code class="julia">type EulerState{T,Y}
+    step::Step{T,Y}
+end
+</code></pre>
+
+<p>Once we do that, in the <code>init</code> we should change <code>EulerState(t0,y0,dy0)</code> to <code>EulerState(Step(t0,y0,dy0))</code> and redefine <code>output</code> to <code>output(state::EulerState)=output(state.step)</code> (<code>output(::Step)</code> is already defined in <code>base.jl</code>).</p>
+<p>One could even replace <code>EulerState</code> with <code>Step</code> completely, but this won't allow us to extend the state with some additional variables and storage space in the future.</p>
+<p>The last thing is that our stepper will continue the integration forever: it doesn't have a stopping condition.  We could add one as an option.</p>
+<pre><code class="julia">type EulerIntegrator{T,Y} &lt;: AbstractIntegrator{T,Y}
+    initstep::T
+    tstop::T
+end
+
+function solver(ode::ExplicitODE{T,Y},
+                ::Type{EulerIntegrator};
+                initstep::T = T(0.1),
+                tstop::T = T(Inf)
+                options...)
+    return Problem(ode,EulerIntegrator{T,Y}(initstep,tstop))
+end
+
+function onestep!(ode::ExplicitODE, integ::EulerIntegrator, state::EulerState)
+    t, y, dy = output(state)
+
+    if t &gt; integ.tstop
+        return finished
+    end
+
+    dt = integ.initstep
+    y += dt*dy
+    t += dt
+    ode.F!(t0,y0,dy0)           # update the derivative
+    return cont
+end
+</code></pre>
+
+<p>As a final improvement, we can (although this is not necessary) use a structure <code>FixedOptions</code> from <code>options.jl</code> to keep our options in one structure.  A corresponding options type for adaptive solver is <code>AdaptiveOptions</code>.  This way we can use the standarized defaults for most options and keep our solver in line with the standard keywords.  Naturally, we have to update <code>onestep!</code> to use the subtype.</p>
+<pre><code class="julia">type EulerIntegrator{T,Y} &lt;: AbstractIntegrator{T,Y}
+    options::FixedOptions{T,Y}
+end
+
+function solver(ode::ExplicitODE{T,Y},
+                ::Type{EulerIntegrator};
+                options...)
+    options = FixedOptions{T}(;options...)
+    return Problem(ode,EulerIntegrator{T,Y}(options))
+end
+</code></pre>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../../man/base/" class="btn btn-neutral" title="Base"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/JuliaODE/ODE.jl" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../../man/base/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+    </span>
+</div>
+
+</body>
+</html>
