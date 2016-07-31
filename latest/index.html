@@ -182,7 +182,7 @@ F!(t,y,dy) = dy[1]=y[1]
 ode = ODE.ExplicitODE(t0,y0,F!)
 </code></pre>
 
-<pre><code>ODE.IVP{Float64,Array{Float64,1},Function,Void,Function}(0.0,[1.0],[6.90438e-310],ex-iterator.F!,nothing,ODE.jac!)
+<pre><code>ODE.IVP{Float64,Array{Float64,1},Function,Void,Function}(0.0,[1.0],[6.90425e-310],ex-iterator.F!,nothing,ODE.jac!)
 </code></pre>
 
 <p>Note that unlike in <code>ODE.ode</code> we now have to supply an in place function <code>F!</code> instead of an explicit function <code>F</code>.  Now we are ready to produce the iterator that solvese to our problem.</p>
@@ -346,5 +346,5 @@ err = 0.0
 
 <!--
 MkDocs version : 0.15.3
-Build Date UTC : 2016-07-31 10:04:25.722856
+Build Date UTC : 2016-07-31 10:38:24.402057
 -->
