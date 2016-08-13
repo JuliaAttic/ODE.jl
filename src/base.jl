@@ -99,7 +99,7 @@ Subtypes include: `AbstractIntegrator`s but also `DenseOutput`
 """
 abstract AbstractSolver
 
-legnth(s::AbstractSolver) = error("`length` is not defined for $(typeof(s)).")
+length(s::AbstractSolver) = error("`length` is not defined for $(typeof(s)).")
 
 @compat (::Type{S}){S<:AbstractSolver}(ivp;opts...) =
     error("The solver $S doesn't support IVP of form $(typeof(ivp))")
