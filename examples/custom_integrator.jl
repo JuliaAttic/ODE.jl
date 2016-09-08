@@ -1,5 +1,3 @@
-include("../src/ODE.jl")
-
 """
 
 Here we demonstrate how to implement an integrator so that it is
@@ -109,18 +107,19 @@ end
 
 # Usage example
 using ODE
-# import ODETests: test_integrator
-using ODETests
+using ODE.ODETests
 using MyIntegrator
 
 integ = MyIntegrator.EulerIntegrator
 
 # declare the ODE as usual
-ode   =ODE.ExplicitODE(0.0,[1.0],(t,y,dy)->copy!(dy,y))
+ode = ODE.ExplicitODE(0.0,[1.0],(t,y,dy)->copy!(dy,y))
 # solve the `ode` with our integrator, note that we can pass options to `solve`
-sol   =ODE.solve(ode,integ;tstop=1.0,initstep=0.001)
-# # print the last step of the solution
-collect(sol)[end]
+sol = ODE.solve(ode,solver=integ, tstop=1.0, initstep=0.001)
+# print the last step of the solution
+
+# the solution can be accessed with
+(sol.t, sol.y, sol.dy)
 
 # test the integrator
 # TODO: for now I can't figure out why it fails.
