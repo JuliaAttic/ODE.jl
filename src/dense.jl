@@ -90,7 +90,7 @@ function init(ivp::IVP,
     dy0 = copy(ivp.y0)
     ivp.F!(ivp.t0,ivp.y0,dy0)
     step_prev = Step(ivp.t0,copy(ivp.y0),dy0)
-    step_out = Step(ivp.t0,copy(ivp.y0),copy(ivp.y0))
+    step_out = Step(ivp.t0,copy(ivp.y0),copy(dy0))
     return DenseState(1,step_prev,step_out,integrator_state)
 end
 
@@ -103,20 +103,16 @@ function onestep!(ivp::IVP,
         return finish
     end
 
-    # the underlying integrator
-    integ = solver.integ
-
     # our next output time
     ti = solver.opts.tout[i]
 
     istate = dstate.integrator_state
 
-
     # try to get a new set of steps enclosing `ti`, if all goes
     # right we end up with t∈[t1,t2] with
     # t1,_=output(dstate.step_prev)
     # t2,_=output(dstate.integrator_state)
-    status = next_interval!(ivp, integ, istate, dstate.step_prev, ti)
+    status = next_interval!(ivp, solver.integ, istate, dstate.step_prev, ti)
     if status == abort
         # we failed to get enough steps
         warn("Iterator was exhausted before the dense output could produce the output.")
@@ -211,21 +207,21 @@ function interpolate!(istate::AbstractState,
                       step_out::Step)
     t1,y1,dy1 = output(step_prev)
     t2,y2,dy2 = output(istate)
+
     if tout==t1
         copy!(step_out.y,y1)
+        copy!(step_out.dy,dy1)
     elseif tout==t2
         copy!(step_out.y,y2)
+        copy!(step_out.dy,dy2)
     else
         dt       = t2-t1
         theta    = (tout-t1)/dt
-        for i=1:length(y1)
-            step_out.y[i] =
-                (1-theta)*y1[i] +
-                theta*y2[i] +
-                theta*(theta-1) *
-                ( (1-2*theta)*(y2[i]-y1[i]) +
-                  (theta-1)*dt*dy1[i] +
-                  theta*dt*dy2[i])
+        for i in indices(y1)
+            Dy  =  y2[i]- y1[i]
+            Ddy = dy2[i]-dy1[i]
+            step_out.y[i] = (Dy*(3 - 2*theta) + Ddy*dt*(-1 + theta))*theta^2 +  dt*(theta-1)*theta*(2*theta-1)*dy1[i] + y1[i]
+            step_out.dy[i] = theta*(-6*Dy/dt*(theta-1) + Ddy*(3*theta-2)) + (1 + 6*(theta-1)*theta)*dy1[i]
         end
     end
     step_out.t = tout
