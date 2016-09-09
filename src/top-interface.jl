@@ -36,7 +36,7 @@ function ode{T,Y,M<:AbstractSolver}(F, y0::Y,
 
     if !prob.solver.opts.progressmeter
         for (t,y) in prob
-            (to,t)
+            push!(to,t)
             push!(yo, extract ? y[1] : copy(y))
         end
     else
@@ -46,7 +46,7 @@ function ode{T,Y,M<:AbstractSolver}(F, y0::Y,
         prog = Progress(round(Int,1000*tdir*(tf-t0)), "Solving:")
 
         for (t,y) in prob
-          (to,t)
+          push!(to,t)
           push!(yo, extract ? y[1] : copy(y))
           prog.counter = max(1,round(Int,1000.0*tdir*(t-t0)))
           ProgressMeter.updateProgress!(prog; showvalues = [(:current_t,t),(:final_t,prob.solver.opts.tstop)])

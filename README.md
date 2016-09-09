@@ -40,6 +40,7 @@ The adaptive solvers accept the following keywords
 - `maxstep`, `minstep` and `initstep`: determine the maximal, minimal and initial integration step (defaults `minstep=|tspan[end] - tspan[1]|/1e9`, `maxstep=|tspan[end] - tspan[1]|/2.5` and automatic initial step estimation).
 - `points=:all` (default): output is given for each value in `tspan` as well as for each intermediate point the solver used.
 - `points=:specified`: output is given only for each value in `tspan`.
+- `progressmeter = false` (default): if true, a progress meter of how much of the time span has been solved already will be displayed while the ODE solver is running 
 
 Additionally, `ode23s` solver supports
 - `jacobian = G(t,y)`: user-supplied Jacobian G(t,y) = dF(t,y)/dy (default estimate by finite-difference method).
