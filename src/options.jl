@@ -16,6 +16,7 @@ General:
 - norm          function to calculate the norm in step control
 - maxiters ::T  maximum number of steps
 - isoutofdomain::Function checks if the solution is outside of the allowed domain
+- progressmeter ::Bool display progressmeter
 
 """
 immutable AdaptiveOptions{T,N<:Function,O<:Function} <: Options{T}
@@ -28,6 +29,7 @@ immutable AdaptiveOptions{T,N<:Function,O<:Function} <: Options{T}
     norm::N
     maxiters::T
     isoutofdomain::O
+    progressmeter ::Bool
 end
 
 @compat function (::Type{AdaptiveOptions{T}}){T,N,O}(;
@@ -41,9 +43,10 @@ end
                                                      norm::N  = y->maxabs(y),
                                                      maxiters = T(1//0),
                                                      isoutofdomain::O = Base.isnan,
+                                                     progressmeter = false,
                                                      kargs...)
     @assert minstep>=T(0) && maxstep>=T(0) && initstep>=T(0) # TODO: move to inner constructor
-    AdaptiveOptions{T,N,O}(tstop,reltol,abstol,minstep,maxstep,initstep,norm,maxiters,isoutofdomain)
+    AdaptiveOptions{T,N,O}(tstop,reltol,abstol,minstep,maxstep,initstep,norm,maxiters,isoutofdomain,progressmeter)
 end
 
 """
@@ -55,20 +58,23 @@ General:
 
 - initstep ::T  initial step (always positive)
 - tstop    ::T  end integration time
+- progressmeter ::Bool display progressmeter
 
 """
 immutable FixedOptions{T} <: Options{T}
     tstop::T
     initstep::T
+    progressmeter ::Bool
 end
 
 @compat function (::Type{FixedOptions{T}}){T}(;
                                               tout     = [T(1//0)],
                                               tstop    = tout[end],
                                               initstep = T(1//100),
+                                              progressmeter = false,
                                               kargs...)
     @assert initstep>=0
-    FixedOptions{T}(tstop,initstep)
+    FixedOptions{T}(tstop,initstep,progressmeter)
 end
 
 function show{T}(io::IO, opts :: Options{T})
