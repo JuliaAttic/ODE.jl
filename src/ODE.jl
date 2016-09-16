@@ -22,6 +22,7 @@ using Polynomials
 using Compat
 import Compat.String
 using ForwardDiff
+using ProgressMeter
 
 import Base: start, next, done, collect, show, convert
 
