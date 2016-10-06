@@ -157,7 +157,7 @@ function init(ode::ExplicitODE,integ::RKIntegrator)
                         Array(typeof(y0), lk)) # ks
 
     # we have to allocate each component separately
-    for i = 1:lk
+    for i in eachindex(work.ks)
         work.ks[i]=zero(y0)
     end
 
@@ -187,15 +187,14 @@ function onestep!(ode::ExplicitODE, integ::RKIntegratorFixed, state::RKState)
         return finish
     end
 
-    dof  = length(step.y)
     b    = integ.tableau.b
     dt   = td*min(abs(state.dt),abs(integ.opts.tstop-step.t))
 
     copy!(work.ynew,step.y)
 
-    for k=1:length(b)
+    for k in linearindices(b)
         calc_next_k!(work, k, ode, integ.tableau, step, dt)
-        for d=1:dof
+        for d in eachindex(step.y)
             work.ynew[d] += dt * b[k]*work.ks[k][d]
         end
     end
@@ -310,7 +309,6 @@ function rk_embedded_step!(work      ::RKWorkArrays,
     # Modifies work.y, work.ynew and work.yerr only
 
     y      = last_step.y
-    dof    = length(y)
     b      = tableau.b
 
     fill!(work.ynew, zero(eltype(y)))
@@ -322,13 +320,13 @@ function rk_embedded_step!(work      ::RKWorkArrays,
         if s > 1
             calc_next_k!(work, s, ode, tableau, last_step, dt)
         end
-        for d=1:dof
+        for d in eachindex(y)
             work.ynew[d] += b[1,s]*work.ks[s][d]
             work.yerr[d] += b[2,s]*work.ks[s][d]
         end
     end
 
-    for d=1:dof
+    for d in eachindex(y)
         work.yerr[d] = dt*(work.ynew[d]-work.yerr[d])
         work.ynew[d] = y[d] + dt*work.ynew[d]
     end
@@ -360,10 +358,9 @@ function stepsize_hw92!{T}(work,
     fac = T(8//10)
     facmax = T(5) # maximal step size increase. 1.5-5
     facmin = 1/facmax  # maximal step size decrease. ?
-    dof = length(last_step.y)
 
     # in-place calculate yerr./tol
-    for d=1:dof
+    for d in eachindex(last_step.y)
 
         # TODO: for some reason calling opts.isoutofdomain
         # generates a lot of allocations
@@ -399,12 +396,11 @@ function calc_next_k!(work      ::RKWorkArrays,
                       tableau   ::Tableau,
                       last_step ::Step,
                       dt)
-    dof = length(last_step.y)
     t, a, c = last_step.t, tableau.a, tableau.c
 
     copy!(work.y,last_step.y)
     for j=1:i-1
-        for d=1:dof
+        for d in eachindex(last_step.y)
             work.y[d] += dt * work.ks[j][d] * a[i,j]
         end
     end

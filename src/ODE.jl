@@ -63,11 +63,15 @@ module ODETests
 import Base.Test: @test, @test_approx_eq_eps
 
 using ODE
+using ForwardDiff
 
 import ODE: AbstractIntegrator, AbstractState, ExplicitODE
 
 include("tests/minimal_types.jl")
 include("tests/test_cases.jl")
+
+# dummy integrator for testing dense output
+include("tests/dummy_integrator.jl")
 
 # Test function for the iterator interface
 include("tests/integrators.jl")
