@@ -26,8 +26,6 @@ function solve{uType,tType,isinplace,algType<:ODEIterAlgorithm,F}(
         u = deepcopy(u0)
     end
 
-    sizeu = size(u)
-
     opts = buildOptions(o,ODEJL_OPTION_LIST,ODEJL_ALIASES,ODEJL_ALIASES_REVERSED)
 
     if !isinplace && typeof(u)<:AbstractArray
