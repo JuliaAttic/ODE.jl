@@ -9,17 +9,14 @@ immutable heun <: ODEIterAlgorithm end
 immutable rk4 <: ODEIterAlgorithm end
 immutable feh45 <: ODEIterAlgorithm end
 
-typealias KW Dict{Symbol,Any}
-
-function solve{uType,tType,isinplace,algType<:ODEIterAlgorithm,F}(prob::AbstractODEProblem{uType,tType,isinplace,F},
-      alg::algType,timeseries=[],ts=[],ks=[];dense=true,save_timeseries=true,
-      saveat=[],callback=()->nothing,timeseries_errors=true,dense_errors=false,
-      kwargs...)
+function solve{uType,tType,isinplace,algType<:ODEIterAlgorithm,F}(
+      prob::AbstractODEProblem{uType,tType,isinplace,F},
+      alg::algType,timeseries=[],ts=[],ks=[];dense=true,
+      timeseries_errors=true,dense_errors=false,kwargs...)
 
     tspan = prob.tspan
 
-    o = KW(kwargs)
-    t = tspan[1]
+    o = Dict{Symbol,Any}(kwargs)
     u0 = prob.u0
     o[:T] = tspan[end]
 
@@ -38,7 +35,7 @@ function solve{uType,tType,isinplace,algType<:ODEIterAlgorithm,F}(prob::Abstract
     else
         f! = prob.f
     end
-    ode  = ODE.ExplicitODE(t,u,f!)
+    ode  = ODE.ExplicitODE(tspan[1],u,f!)
     # adaptive==true ? FoA=:adaptive : FoA=:fixed #Currently limied to only adaptive
     FoA = :adaptive
     if algType <: rk23
@@ -61,9 +58,9 @@ function solve{uType,tType,isinplace,algType<:ODEIterAlgorithm,F}(prob::Abstract
         solver = ODE.RKIntegrator{FoA,:rk45}
     end
     out = ODE.solve(ode;solver=solver,opts...)
-    timeseries = out.y
-    ts = out.t
-    ks = out.dy
+    y = out.y
+    t = out.t
+    dy = out.dy
     if length(out.y[1])==1
         tmp = Vector{eltype(out.y[1])}(length(out.y))
         tmp_dy = Vector{eltype(out.dy[1])}(length(out.dy))
@@ -71,22 +68,22 @@ function solve{uType,tType,isinplace,algType<:ODEIterAlgorithm,F}(prob::Abstract
             tmp[i] = out.y[i][1]
             tmp_dy[i] = out.dy[i][1]
         end
-        timeseries = tmp
-        ks = tmp_dy
+        y = tmp
+        dy = tmp_dy
     end
 
-    saveat_idxs = find((x)-> x ∈ saveat,ts)
-    t_nosaveat = view(ts,symdiff(1:length(ts),saveat_idxs))
-    u_nosaveat = view(timeseries,symdiff(1:length(ts),saveat_idxs))
+    #saveat_idxs = find((x)-> x ∈ saveat,ts)
+    #t_nosaveat = view(ts,symdiff(1:length(ts),saveat_idxs))
+    #u_nosaveat = view(timeseries,symdiff(1:length(ts),saveat_idxs))
 
     if dense
-        interp = (tvals) -> common_interpolation(tvals,t_nosaveat,u_nosaveat,ks,alg,f!)
+        interp = (tvals) -> common_interpolation(tvals,t,y,dy,alg,f!)
     else
         interp = (tvals) -> nothing
     end
 
-    build_solution(prob,alg,ts,timeseries,
-                      dense=dense,k=ks,interp=interp,
+    build_solution(prob,alg,t,y,
+                      dense=dense,k=dy,interp=interp,
                       timeseries_errors = timeseries_errors,
                       dense_errors = dense_errors)
 end
