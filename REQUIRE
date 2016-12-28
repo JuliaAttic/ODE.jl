@@ -2,3 +2,4 @@ julia 0.5-
 Polynomials
 ForwardDiff
 Compat 0.4.1
+DiffEqBase

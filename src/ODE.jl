@@ -20,6 +20,8 @@ module ODE
 
 using Polynomials
 using Compat
+using DiffEqBase
+import DiffEqBase: solve
 import Compat.String
 using ForwardDiff
 
@@ -48,6 +50,7 @@ include("integrators/rosenbrock.jl")
 
 # User interface to solvers
 include("top-interface.jl")
+include("common.jl")
 
 
 """
